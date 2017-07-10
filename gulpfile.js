@@ -121,9 +121,9 @@ gulp.task('smoosh',() => {
 gulp.task('minify', function() {	
 	const destDir = 'deploy';
 	return gulp.src('dist/*.html')
-		//.pipe($.useref())
-		//.pipe($.if('*.js',$.uglify()))
-		//.pipe($.if('*.css',$.minify()))
+		.pipe($.useref())
+		.pipe($.if('*.js',$.uglify()))
+		.pipe($.if('*.css',$.minify()))
 		.pipe($.htmlmin({
 			collapseWhitespace:true,
 			removeComments:true,
@@ -141,4 +141,4 @@ gulp.task('minify', function() {
 
 
 
-gulp.task('deploy', gulp.series('del','html','style','script','smoosh','minify'));
+gulp.task('deploy', gulp.series('html','style','script','smoosh','minify'));

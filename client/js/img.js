@@ -1,4 +1,5 @@
 import {docCookies} from './helper.js';
+import Advideo from './video.js';
 
 class Adimg {
   constructor(root) {
@@ -26,32 +27,46 @@ class Adimg {
 
   pushDownToOpen() {
     const videoSection = document.getElementById('videoSection');
+    const videoPostPic = document.getElementById('postPic');
     const imgSection = this.root;
     videoSection.classList.remove('close');
     videoSection.classList.add('open');
     videoSection.style.height ='90px';
     videoSection.style.display='block';
+    videoPostPic.style.display='block';
     imgSection.style.display='none';
     const video = videoSection.querySelector('#adVideo');
+    //Advideo.prepareForPlayAgain();
+    if(video instanceof HTMLElement) {
+      //video.currentTime = 0;
+      //video.pause();
+      setTimeout(() => {
+        videoPostPic.style.display='none';
+        videoSection.classList.remove('open');
+        videoSection.style.height='400px';
+       // videoSection.style.display='block';
+        //Advideo.prepareForPlayAgain();
+        if(video instanceof HTMLElement) {
+          video.play();
+        }
+      }, 2000);
+
+    }
+
     
-    setTimeout(() => {
-      videoSection.classList.remove('open');
-      videoSection.style.height='400px';
-      videoSection.style.display='block';
-      if(video instanceof HTMLElement) {
-        video.currentTime = 0;
-        video.play();
-      }
-    }, 2000);
   }
 
   autoOpen() {
-    const userCookie = docCookies.getItem('pushdownAd');
-    console.log(userCookie);
-    //if(userCookie === null) {
-      this.img.addEventListener('load', this.pushDownToOpen,false);
-      docCookies.setItem('pushdownAd','hasLoaded');
-    //}
+    let userCookie = docCookies.getItem('pushdownAd');
+  
+    if(!userCookie) {
+      window.addEventListener('load', this.pushDownToOpen, false);
+
+      //自动播放后设置cookie
+      let expiredTime = new Date();
+      expiredTime.setTime(expiredTime.getTime()+24*60*60*1000);
+      docCookies.setItem('pushdownAd','hasLoaded',expiredTime);
+    }
   }
 
   clickToOpen() {

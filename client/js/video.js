@@ -13,6 +13,10 @@ class Advideo {
     if(this.root.querySelector('#adVideo') instanceof HTMLElement) {
       this.video = this.root.querySelector('#adVideo');
     }
+
+    if(this.root.querySelector('#postPic') instanceof HTMLElement) {
+      this.postPic = this.root.querySelector('#postPic');
+    }
     if(this.root.querySelector('#pauseBtn') instanceof HTMLElement) {
       this.pause = this.root.querySelector('#pauseBtn');
     }
@@ -36,7 +40,12 @@ class Advideo {
       setTimeout(()=>{
         this.root.style.display='none';
         this.root.classList.remove('close');
+        this.video.currentTime = 0;
+        this.play.style.display = 'none';
+        this.pause.style.display = 'block';
+      
         document.getElementById('imgSection').style.display='block';
+        this.video.currentTime = 0;
       },2000);
       this.root.classList.add('close');
     })
@@ -68,7 +77,10 @@ class Advideo {
     }, false);
   }
 
-  
+  static prepareForPlayAgain() {
+     const advideo = new Advideo('videoSection');
+     
+  }
 
 }
 
