@@ -45,6 +45,8 @@ class Switch {
     switchStyle.innerHTML = ".pullup-close{-webkit-animation:shrinkToClose 1s linear;-moz-animation:shrinkToClose 1s linear;-o-animation:shrinkToClose 1s linear;animation:shrinkToClose 1s linear}.pushdown-open{-webkit-animation:pushdownToOpen 1s linear;-moz-animation:pushdownToOpen 1s linear;-o-animation:pushdownToOpen 1s linear;animation:pushdownToOpen 1s linear}@-webkit-keyframes shrinkToClose{from{width:969px;height:400px}to{width:969px;height:90px}}@-moz-keyframes shrinkToClose{from{width:969px;height:400px}to{width:969px;height:90px}}@-o-keyframes shrinkToClose{from{width:969px;height:400px}to{width:969px;height:90px}}@keyframes shrinkToClose{from{width:969px;height:400px}to{width:969px;height:90px}}@-webkit-keyframes pushdownToOpen{from{width:969px;height:90px}to{width:969px;height:400px}}@-moz-keyframes pushdownToOpen{from{width:969px;height:90px}to{width:969px;height:400px}}@-o-keyframes pushdownToOpen{from{width:969px;height:90px}to{width:969px;height:400px}}@keyframes pushdownToOpen{from{width:969px;height:90px}to{width:969px;height:400px}}";
     innerIframeWindowHead.append(switchStyle);
     outerIframeWindowHead.append(switchStyle);
+    console.log(innerIframeWindowHead);
+    console.log(outerIframeWindowHead);
   }
   pushDownToOpen() {
     const videoSection = this.videoObj.root;
