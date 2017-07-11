@@ -141,4 +141,8 @@ gulp.task('minify', function() {
 
 
 
-gulp.task('deploy', gulp.series('html','style','script','smoosh','minify'));
+gulp.task('deploy', gulp.series('html','style','script','smoosh','minify',()=>{
+  const destDir = '../NEXT/app/m/marketing/testAd';
+  return gulp.src('deploy/*.html')
+    .pipe(gulp.dest(destDir));
+}));

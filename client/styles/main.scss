@@ -44,19 +44,7 @@ html,body {
   height:90px;
   display:none;
   
-  &.close {
-    -webkit-animation:shrinkToClose 2s ease;
-    -moz-animation: shrinkToClose 2s ease;
-    -o-animation: shrinkToClose 2s ease;
-    animation:shrinkToClose 2s ease;
-  }
-
-  &.open {
-    -webkit-animation:pushdownToOpen 2s ease;
-    -moz-animation: pushdownToOpen 2s ease;
-    -o-animation: pushdownToOpen 2s ease;
-    animation:pushdownToOpen 2s ease;
-  }
+ 
 
   .video {
     width:100%;
@@ -138,7 +126,19 @@ html,body {
   animation:pushdownToOpen 2s ease;
 }
 */
+.pullup-close {
+  -webkit-animation:shrinkToClose 1s linear;
+  -moz-animation: shrinkToClose 1s linear;
+  -o-animation: shrinkToClose 1s linear;
+  animation:shrinkToClose 1s linear;
+}
 
+.pushdown-open {
+  -webkit-animation:pushdownToOpen 1s linear;
+  -moz-animation: pushdownToOpen 1s linear;
+  -o-animation: pushdownToOpen 1s linear;
+  animation:pushdownToOpen 1s linear;
+}
 @-webkit-keyframes shrinkToClose {
   from {
     width:969px;
