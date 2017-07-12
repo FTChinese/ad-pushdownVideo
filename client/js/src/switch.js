@@ -1,33 +1,42 @@
 import {docCookies} from "./helper.js";
 
 class Switch {
-  constructor(imgObj, videoObj, innerIframeId, outerIframeId) {
+  constructor(imgObj, videoObj, mode) {
     this.imgObj = imgObj;
     this.videoObj = videoObj;
-
     
+    let innerIframeId = "";
+    let outerIframeId = "";
     if(window.parent && window.parent.parent) {
-      console.log('window.parent'+window.parent);
-      console.log('window.parent.parent'+window.parent.parent);
-      this.injectCssToParents();
+      if(mode != "prod") {
+        mode = "dev";
+        innerIframeId = "banner0Inner";
+        outerIframeId = "banner0";
+      } else {
+        innerIframeId = window.parent.innerFrameId;
+        outerIframeId = window.parent.parentId;
+      }
+
       var innerIframe = window.parent.document.getElementById(innerIframeId);
       var outerIframe = window.parent.parent.document.getElementById(outerIframeId);
       if(innerIframe && outerIframe) {
-        console.log('innerIframe');
-        console.log('outerIframe');
+        this.innerIframeId = innerIframeId;
+        this.outerIframeId = outerIframeId;
         this.innerIframe = innerIframe;
         this.outerIframe = outerIframe;
+
+        this.innerIframe.style.height ="90px";
+        this.outerIframe.style.height ="90px";
+
+        //注入parent和parent.parent所需的css
+        this.injectCssToParents();
+
+        //处理outerIframe的ancestor元素
+        this.dealwithAncestors();
       }
     }
-    if(this.innerIframe && this.outerIframe) {
-       console.log(this.innerIframe);
-       console.log(this.outerIframe);
-       this.innerIframe.style.height ="90px";
-       this.outerIframe.style.height ="90px";
-       
-    }
-    
 
+       
     this.pushDownToOpen = this.pushDownToOpen.bind(this);
     this.pullUpToClose = this.pullUpToClose.bind(this);
     
@@ -37,17 +46,47 @@ class Switch {
     this.clickToClose();
   }
   injectCssToParents() {
+    if(!(window.parent && window.parent.parent)){
+      return;
+    }
     const innerIframeWindowHead = window.parent.document.getElementsByTagName("head")[0];
     console.log(innerIframeWindowHead);
     const outerIframeWindowHead = window.parent.parent.document.getElementsByTagName("head")[0];
     console.log(outerIframeWindowHead);
     const switchStyle = document.createElement("style");
     switchStyle.innerHTML = ".pullup-close{-webkit-animation:shrinkToClose 1s linear;-moz-animation:shrinkToClose 1s linear;-o-animation:shrinkToClose 1s linear;animation:shrinkToClose 1s linear}.pushdown-open{-webkit-animation:pushdownToOpen 1s linear;-moz-animation:pushdownToOpen 1s linear;-o-animation:pushdownToOpen 1s linear;animation:pushdownToOpen 1s linear}@-webkit-keyframes shrinkToClose{from{width:969px;height:400px}to{width:969px;height:90px}}@-moz-keyframes shrinkToClose{from{width:969px;height:400px}to{width:969px;height:90px}}@-o-keyframes shrinkToClose{from{width:969px;height:400px}to{width:969px;height:90px}}@keyframes shrinkToClose{from{width:969px;height:400px}to{width:969px;height:90px}}@-webkit-keyframes pushdownToOpen{from{width:969px;height:90px}to{width:969px;height:400px}}@-moz-keyframes pushdownToOpen{from{width:969px;height:90px}to{width:969px;height:400px}}@-o-keyframes pushdownToOpen{from{width:969px;height:90px}to{width:969px;height:400px}}@keyframes pushdownToOpen{from{width:969px;height:90px}to{width:969px;height:400px}}";
-    innerIframeWindowHead.append(switchStyle);
-    outerIframeWindowHead.append(switchStyle);
+    const switchStyleCopy = switchStyle.cloneNode(true);
+
+    innerIframeWindowHead.appendChild(switchStyle);
+    outerIframeWindowHead.appendChild(switchStyleCopy);
     console.log(innerIframeWindowHead);
     console.log(outerIframeWindowHead);
   }
+
+  dealwithAncestors() {
+    if(!(this.outerIframeId && this.outerIframe && this.outerIframe.parentNode )) {
+      return;
+    }
+    
+    // 将位于outerIframe的父元素上的“广告”字样移动到左上角
+    const contentDivId = this.outerIframeId+'content';
+    const contentDiv = this.outerIframe.parentNode;//outerIframe的父元素class="banner-content"  
+    contentDiv.id = contentDivId;
+    if(window.parent.parent.document.styleSheets[0]) {
+      window.parent.parent.document.styleSheets[0].insertRule('#' + contentDivId + ':before { right: auto; left:0;}', 0);
+    }
+
+    //将outerIframe的一系列层级的祖先元素高度都设置为"auto"
+    let ancestorDiv = contentDiv;
+    const ancestorBody = window.parent.parent.document.body;
+    while(ancestorDiv!=ancestorBody) {
+      ancestorDiv.style.height = "auto";
+      if(ancestorDiv.parentNode) {
+         ancestorDiv = ancestorDiv.parentNode;
+      }
+    }
+  }
+
   pushDownToOpen() {
     const videoSection = this.videoObj.root;
     const videoPostPic = this.videoObj.postPic;
@@ -85,8 +124,6 @@ class Switch {
         video.play();
       }
     }, 1000);
-
-    
   }
   
   pullUpToClose() {
@@ -148,14 +185,6 @@ class Switch {
     const video = this.videoObj.video;
     video.addEventListener("ended", this.pullUpToClose, false)
   }
-    /*
-      () => {
-      setTimeout(()=>{
-        this.videoObj.root.style.display="none";
-        this.imgObj.style.display="block";
-      },2000);
-      this.videoObj.root.classList.add("close");
-    },*/
 }
 
 export default Switch;
