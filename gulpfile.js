@@ -9,7 +9,9 @@ const nodeResolve = require('rollup-plugin-node-resolve');
 const del = require('del');
 const rollupUglify = require('rollup-plugin-uglify');
 const minifyEs6 = require('uglify-es').minify;
+const merge = require('merge-stream');
 var cache;
+const finalName = "pushdownVideo";
 const env = new nunjucks.Environment(
   new nunjucks.FileSystemLoader(['views'],{
     watch:false,//MARK:如果为true，则会导致html任务挂在那儿
@@ -111,21 +113,12 @@ gulp.task('del', (done) => {
   });
 });
 
-gulp.task('smoosh',() => {
+gulp.task('build', gulp.series('del','html','style','script',() => {
   const destDir = 'dist';
 	return gulp.src('.tmp/*.html')
 		.pipe($.smoosher({
 			ignoreFilesNotFound:true
 		}))
-		.pipe(gulp.dest(destDir));
-});
-
-gulp.task('minify', function() {	
-	const destDir = 'deploy';
-	return gulp.src('dist/*.html')
-		.pipe($.useref())
-		.pipe($.if('*.js',$.uglify()))
-		.pipe($.if('*.css',$.minify()))
 		.pipe($.htmlmin({
 			collapseWhitespace:true,
 			removeComments:true,
@@ -137,19 +130,19 @@ gulp.task('minify', function() {
 			gzip:true,
 			showFiles:true,
 			showTotal:true
-		}))
+    }))
+    .pipe($.rename(`${finalName}.html`))
 		.pipe(gulp.dest(destDir));
-});
+}));
 
 
 
-gulp.task('publish', gulp.series('html','style','script','smoosh','minify',()=>{
+gulp.task('publish', gulp.series('build',()=>{
   const managementDir = '../ad-management/complex_pages';
   const onlineDir = '../dev_www/frontend/tpl/marketing/complex_pages'
-  fs.rename("deploy/index.html","pushdownPic.html");
-  const managementStream = gulp.src('deploy/*.html')
+  const managementStream = gulp.src(`dist/${finalName}.html`)
     .pipe(gulp.dest(managementDir));
-  const onlineStream = gulp.src('deploy/*.html')
+  const onlineStream = gulp.src(`dist/${finalName}.html`)
     .pipe(gulp.dest(onlineDir));
   return merge(managementStream,onlineStream);
 }));
