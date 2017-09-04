@@ -7,7 +7,8 @@ const rollup = require('rollup').rollup;
 const babel = require('rollup-plugin-babel');
 const nodeResolve = require('rollup-plugin-node-resolve');
 const del = require('del');
-
+const rollupUglify = require('rollup-plugin-uglify');
+const minifyEs6 = require('uglify-es').minify;
 var cache;
 const env = new nunjucks.Environment(
   new nunjucks.FileSystemLoader(['views'],{
@@ -51,7 +52,8 @@ gulp.task('script',() => {
        }),
        nodeResolve({
          jsnext:true,
-       })
+       }),
+       rollupUglify({},minifyEs6)
      ]
    }).then(function(bundle) {
      cache = bundle;//Cache for later use
@@ -141,8 +143,13 @@ gulp.task('minify', function() {
 
 
 
-gulp.task('deploy', gulp.series('html','style','script','smoosh','minify',()=>{
-  const destDir = '../NEXT/app/m/marketing/testAd';
-  return gulp.src('deploy/*.html')
-    .pipe(gulp.dest(destDir));
+gulp.task('publish', gulp.series('html','style','script','smoosh','minify',()=>{
+  const managementDir = '../ad-management/complex_pages';
+  const onlineDir = '../dev_www/frontend/tpl/marketing/complex_pages'
+  fs.rename("deploy/index.html","pushdownPic.html");
+  const managementStream = gulp.src('deploy/*.html')
+    .pipe(gulp.dest(managementDir));
+  const onlineStream = gulp.src('deploy/*.html')
+    .pipe(gulp.dest(onlineDir));
+  return merge(managementStream,onlineStream);
 }));
