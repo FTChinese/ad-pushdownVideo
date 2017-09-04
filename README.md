@@ -25,5 +25,5 @@ gulp serve
 ## Online Test 
 by "prod" mode
 ```
-gulp deploy
+gulp publish
 ```
